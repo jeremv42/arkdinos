@@ -67,7 +67,7 @@
 				`pw=${item.wildLevels.weight ?? 0}`,
 				`pd=${item.wildLevels.melee ?? 0}`,
 			];
-			return `https://www.dododex.com/stat-calculator/${item.type.toLocaleLowerCase()}?${arr.join("&")}`;
+			return `https://www.dododex.com/stat-calculator/${item.type.toLocaleLowerCase()}/${item.baseLevel}?${arr.join("&")}`;
 		}
 	}
 </script>
