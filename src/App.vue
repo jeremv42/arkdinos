@@ -52,7 +52,7 @@
 			this.items = Array.from(Object.keys(files))
 				.map((k) => files[k])
 				.reduce((arr: any[], cur: any[]) => {
-					arr.push(...cur);
+					arr.push(...cur.filter(c => c.type && c.wildLevels));
 					return arr;
 				}, [] as any[]);
 		}
