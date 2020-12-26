@@ -4,18 +4,31 @@
 			<v-card>
 				<v-card-title>Tamed</v-card-title>
 				<v-card-text>
-					<v-text-field
-						label="Search"
-						v-model="search"
-					/>
+					<v-tabs v-model="tab">
+						<v-tab key="table">Table</v-tab>
+						<v-tab key="map">Map</v-tab>
+					</v-tabs>
 
-					<v-data-table :headers="headers" :items="items" :search="search">
-						<template v-slot:item.dododex="{ item }">
-							<a :href="getDododexLink(item)" target="_blank">
-								<v-icon>mdi-link</v-icon>
-							</a>
-						</template>
-					</v-data-table>
+					<v-tabs-items v-model="tab">
+						<v-tab-item key="table">
+							<v-text-field
+								label="Search"
+								v-model="search"
+							/>
+
+							<v-data-table :headers="headers" :items="items" :search="search">
+								<template v-slot:item.dododex="{ item }">
+									<a :href="getDododexLink(item)" target="_blank">
+										<v-icon>mdi-link</v-icon>
+									</a>
+								</template>
+							</v-data-table>
+						</v-tab-item>
+
+						<v-tab-item key="map">
+							<Map :dinos="items" />
+						</v-tab-item>
+					</v-tabs-items>
 				</v-card-text>
 			</v-card>
 		</v-container>
@@ -24,11 +37,14 @@
 
 <script lang="ts">
 	import { Component, Vue } from "vue-property-decorator";
-	import HelloWorld from "./components/HelloWorld.vue";
+	import Map from "./components/Map.vue";
 	import type { DataTableHeader } from "vuetify";
 
-	@Component({})
+	@Component({
+		components: { Map, },
+	})
 	export default class App extends Vue {
+		tab = "table";
 		headers: DataTableHeader[] = [
 			{ text: "Type", value: "type", sortable: true },
 			{ text: "Name", value: "name", sortable: true },
