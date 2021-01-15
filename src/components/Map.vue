@@ -65,6 +65,9 @@ export default class Map extends Vue {
 			m.remove();
 
 		for (const dino of this.filteredDinos) {
+			const lat = Math.round(dino.location.lat * 10) / 10;
+			const lon = Math.round(dino.location.lon * 10) / 10;
+
 			this.markers.push(
 				circleMarker(arkToLatLng(dino.location), {
 					fill: true,
@@ -74,7 +77,7 @@ export default class Map extends Vue {
 					radius: Math.max(8, dino.baseLevel / 20),
 				})
 					.addTo(this.map)
-					.bindPopup(`${dino.type}, ${dino.name || "<noname>"} ${dino.baseLevel + (dino.extraLevel || 0)}`)
+					.bindPopup(`${dino.type}, ${dino.name || "<noname>"} ${dino.baseLevel + (dino.extraLevel || 0)} (${lat}, ${lon})`)
 			);
 		}
 	}
