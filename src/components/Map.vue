@@ -57,7 +57,7 @@ export default class Map extends Vue {
 		function arkToLatLng(loc: any) {
 			return latLng({
 				lat: ((100 - loc.lat) - 0.52 - 50) * 0.9625 + 50,
-				lon: (loc.lon + 0.9 - 50) * 0.99 + 50,
+				lng: (loc.lon + 0.9 - 50) * 0.99 + 50,
 			});
 		}
 
