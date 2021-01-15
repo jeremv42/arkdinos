@@ -13,7 +13,7 @@ import {Vue, Component, Prop, Watch} from "vue-property-decorator";
 import * as d3 from "d3";
 import {circleMarker, CRS, imageOverlay, latLng, map as LeafletMap, marker} from "leaflet";
 // @ts-ignore
-import imgMap from "../assets/The_Island_Topographic.jpg";
+import imgMap from "../assets/The_Island_Topographic_Map.jpg";
 
 @Component({})
 export default class Map extends Vue {
