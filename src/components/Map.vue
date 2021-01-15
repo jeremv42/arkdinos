@@ -1,67 +1,89 @@
 <template>
-    <svg ref="svg" width="1024px" height="1024px">
-        <rect class="overlay" width="1024px" height="1024px"/>
-        <g ref="g">
-            <image width="1024px" height="1024px" xlink:href="../assets/The_Island_Topographic_Map.jpg" />
-        </g>
-    </svg>
+	<div>
+		<v-text-field
+			label="Search"
+			v-model="search"
+		/>
+		<div ref="map" style="border: 1px dotted blue; min-height: 80vh;"/>
+	</div>
 </template>
 
 <script lang="ts">
 import {Vue, Component, Prop, Watch} from "vue-property-decorator";
 import * as d3 from "d3";
+import {circleMarker, CRS, imageOverlay, latLng, map as LeafletMap, marker} from "leaflet";
+// @ts-ignore
+import imgMap from "../assets/The_Island_Topographic.jpg";
 
 @Component({})
 export default class Map extends Vue {
-    @Prop({ type: Array, required: true, })
-    dinos!: any[];
+	@Prop({type: Array, required: true,})
+	dinos!: any[];
 
-    position: [number, number] = [0, 0];
-    scale: number = 1;
+	map: any = null;
+	search: string = "";
+	markers: any[] = [];
 
-    originalHtml = "";
+	get filteredDinos() {
+		if (!this.search)
+			return this.dinos;
+		const regex = new RegExp(this.search.replaceAll(/([a-z0-9_-]+)/gi, s => `.*${s}.*`), "i");
+		return this.dinos.filter(d => {
+			if (regex.test(d.name))
+				return true;
+			if (regex.test(d.type))
+				return true;
+			return false;
+		});
+	}
 
-    mounted() {
-        this.originalHtml = (this.$refs.g as Element).innerHTML;
-        this._watchDinos();
-    }
+	mounted() {
+		this.map = LeafletMap(this.$refs.map as HTMLDivElement, {
+			crs: CRS.Simple,
+			minZoom: 2,
+			maxZoom: 10,
+		});
+		const bounds: [[number, number], [number, number]] = [[0, 0], [100, 100]];
+		this.map.fitBounds(bounds);
+		imageOverlay(imgMap, bounds).addTo(this.map);
 
-    @Watch("dinos", {deep: true})
-    _watchDinos() {
-        (this.$refs.g as Element).innerHTML = this.originalHtml;
-        const g = d3.select(this.$refs.g as Element);
-        g.call(d3.zoom().scaleExtent([1, 8]).on("zoom", ev => {
-            this.position = [ev.transform.x, ev.transform.y];
-            this.scale = ev.transform.k;
-            g.attr("transform", `translate(${this.position}) scale(${this.scale})`);
-        }));
+		this._watchDinos();
+	}
 
-        const x = d3.scaleLinear().domain([-40 * 8500, 40 * 8500]).range([0, 1024]);
-        const y = d3.scaleLinear().domain([-40 * 8500, 40 * 8500]).range([0, 1024]);
-        // g.append("g").call(d3.axisBottom(y));
+	@Watch("filteredDinos", {deep: true})
+	_watchDinos() {
+		const levels = d3.scaleLinear(["#a2f0ff", "#ffa600",]).domain([100, 300]);
 
-        const levels = d3.scaleLinear(["#a2f0ff","#ffa600",]).domain([1, 200]);
-          // Add dots
-        g.append('g')
-            .selectAll("dot")
-            .data(this.dinos)
-            .enter()
-            .append("circle")
-                .attr("cx", d => x(d.location.x))
-                .attr("cy", d => y(d.location.y))
-                .attr("r", d => 1)
-                .attr("stroke", "black")
-                .attr("stroke-width", "0.2")
-                .style("fill", d => levels(d.baseLevel))
-                .on("click", (_, d) => alert(`${d.type}, ${d.name || "<noname>"} ${d.baseLevel + (d.extraLevel || 0)}`))
-            ;
-    }
+		function arkToLatLng(loc: any) {
+			return latLng({
+				lat: ((100 - loc.lat) - 0.52 - 50) * 0.9625 + 50,
+				lon: (loc.lon + 0.9 - 50) * 0.99 + 50,
+			});
+		}
+
+		for (const m of this.markers)
+			m.remove();
+
+		for (const dino of this.filteredDinos) {
+			this.markers.push(
+				circleMarker(arkToLatLng(dino.location), {
+					fill: true,
+					fillColor: levels(dino.baseLevel),
+					fillOpacity: 0.9,
+					weight: 1,
+					radius: Math.max(8, dino.baseLevel / 20),
+				})
+					.addTo(this.map)
+					.bindPopup(`${dino.type}, ${dino.name || "<noname>"} ${dino.baseLevel + (dino.extraLevel || 0)}`)
+			);
+		}
+	}
 }
 </script>
 
 <style type="text/css">
 .overlay {
-  fill: none;
-  pointer-events: all;
+	fill: none;
+	pointer-events: all;
 }
 </style>
