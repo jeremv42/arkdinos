@@ -13,7 +13,7 @@ import {Vue, Component, Prop, Watch} from "vue-property-decorator";
 import * as d3 from "d3";
 import {circleMarker, CRS, imageOverlay, latLng, map as LeafletMap, marker} from "leaflet";
 // @ts-ignore
-import imgMap from "../assets/The_Island_Topographic.jpg";
+import imgMap from "../assets/The_Island_Topographic_Map.jpg";
 
 @Component({})
 export default class Map extends Vue {
@@ -57,7 +57,7 @@ export default class Map extends Vue {
 		function arkToLatLng(loc: any) {
 			return latLng({
 				lat: ((100 - loc.lat) - 0.52 - 50) * 0.9625 + 50,
-				lon: (loc.lon + 0.9 - 50) * 0.99 + 50,
+				lng: (loc.lon + 0.9 - 50) * 0.99 + 50,
 			});
 		}
 
@@ -65,6 +65,9 @@ export default class Map extends Vue {
 			m.remove();
 
 		for (const dino of this.filteredDinos) {
+			const lat = Math.round(dino.location.lat * 10) / 10;
+			const lon = Math.round(dino.location.lon * 10) / 10;
+
 			this.markers.push(
 				circleMarker(arkToLatLng(dino.location), {
 					fill: true,
@@ -74,7 +77,7 @@ export default class Map extends Vue {
 					radius: Math.max(8, dino.baseLevel / 20),
 				})
 					.addTo(this.map)
-					.bindPopup(`${dino.type}, ${dino.name || "<noname>"} ${dino.baseLevel + (dino.extraLevel || 0)}`)
+					.bindPopup(`${dino.type}, ${dino.name || "<noname>"} ${dino.baseLevel + (dino.extraLevel || 0)} (${lat}, ${lon})`)
 			);
 		}
 	}

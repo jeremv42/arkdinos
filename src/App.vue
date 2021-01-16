@@ -39,12 +39,30 @@ export default class App extends Vue {
 
 	async mounted() {
 		const files = await fetch(`https://ark.virant.fr/tamed.php`).then(r => r.json());
+		
 		this.items = Array.from(Object.keys(files))
 			.map((k) => files[k])
 			.reduce((arr: any[], cur: any[]) => {
 				arr.push(...cur.filter(c => c.type && c.wildLevels));
 				return arr;
 			}, [] as any[]);
+
+		const noSexDinos = [
+			'Dung Beetle',
+			'Titanoboa',
+			'Achatina',
+			'Queen Bee',
+			'Titanosaur',
+		]
+		this.items.forEach((item, idx, items) => {
+			if (item.female) {
+				items[idx].sex = 'F';
+			} else if (noSexDinos.includes(item.type)) {
+				items[idx].sex = 'X';
+			} else {
+				items[idx].sex = 'M';
+			}
+		});
 	}
 }
 </script>
