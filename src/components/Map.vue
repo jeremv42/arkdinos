@@ -13,22 +13,27 @@ import {Vue, Component, Prop, Watch} from "vue-property-decorator";
 import * as d3 from "d3";
 import {circleMarker, CRS, imageOverlay, latLng, map as LeafletMap, marker} from "leaflet";
 // @ts-ignore
-import imgMap from "../assets/The_Island_Topographic.jpg";
+import imgMapTheIsland from "../assets/The_Island_Topographic.jpg";
+// @ts-ignore
+import imgMapRagnarok from "../assets/Ragnarok_Map.png";
 
 @Component({})
 export default class Map extends Vue {
-	@Prop({type: Array, required: true,})
+	@Prop({ type: String, required: true, })
+	map!: "TheIsland"|"Ragnarok";
+	@Prop({ type: Array, required: true, })
 	dinos!: any[];
 
-	map: any = null;
+	leafletMap: any = null;
 	search: string = "";
 	markers: any[] = [];
 
 	get filteredDinos() {
+		const dinos = this.dinos.filter(d => d.map === this.map);
 		if (!this.search)
-			return this.dinos;
+			return dinos;
 		const regex = new RegExp(this.search.replaceAll(/([a-z0-9_-]+)/gi, s => `.*${s}.*`), "i");
-		return this.dinos.filter(d => {
+		return dinos.filter(d => {
 			if (regex.test(d.name))
 				return true;
 			if (regex.test(d.type))
@@ -38,14 +43,14 @@ export default class Map extends Vue {
 	}
 
 	mounted() {
-		this.map = LeafletMap(this.$refs.map as HTMLDivElement, {
+		this.leafletMap = LeafletMap(this.$refs.map as HTMLDivElement, {
 			crs: CRS.Simple,
 			minZoom: 2,
 			maxZoom: 10,
 		});
 		const bounds: [[number, number], [number, number]] = [[0, 0], [100, 100]];
-		this.map.fitBounds(bounds);
-		imageOverlay(imgMap, bounds).addTo(this.map);
+		this.leafletMap.fitBounds(bounds);
+		imageOverlay(this.map === "TheIsland" ? imgMapTheIsland : imgMapRagnarok, bounds).addTo(this.leafletMap);
 
 		this._watchDinos();
 	}
@@ -76,7 +81,7 @@ export default class Map extends Vue {
 					weight: 1,
 					radius: Math.max(8, dino.baseLevel / 20),
 				})
-					.addTo(this.map)
+					.addTo(this.leafletMap)
 					.bindPopup(`${dino.type}, ${dino.name || "<noname>"} ${dino.baseLevel + (dino.extraLevel || 0)} (${lat}, ${lon})`)
 			);
 		}

@@ -25,6 +25,7 @@ export default class TamedTable extends Vue {
 	dinos!: any[];
 
 	headers: DataTableHeader[] = [
+		{ text: "Map", value: "map", sortable: true },
 		{ text: "Type", value: "type", sortable: true },
 		{ text: "Sex", value: "sex", sortable: true},
 		{ text: "Name", value: "name", sortable: true },
