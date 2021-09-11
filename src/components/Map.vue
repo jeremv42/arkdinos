@@ -16,11 +16,13 @@ import {circleMarker, CRS, imageOverlay, latLng, map as LeafletMap, marker} from
 import imgMapTheIsland from "../assets/The_Island_Topographic.jpg";
 // @ts-ignore
 import imgMapRagnarok from "../assets/Ragnarok_Map.png";
+// @ts-ignore
+import imgMapValguero from "../assets/Valguero.png";
 
 @Component({})
 export default class Map extends Vue {
 	@Prop({ type: String, required: true, })
-	map!: "TheIsland"|"Ragnarok";
+	map!: "TheIsland"|"Ragnarok"|"Valguero";
 	@Prop({ type: Array, required: true, })
 	dinos!: any[];
 
@@ -50,7 +52,12 @@ export default class Map extends Vue {
 		});
 		const bounds: [[number, number], [number, number]] = [[0, 0], [100, 100]];
 		this.leafletMap.fitBounds(bounds);
-		imageOverlay(this.map === "TheIsland" ? imgMapTheIsland : imgMapRagnarok, bounds).addTo(this.leafletMap);
+		const maps = {
+			TheIsland: imgMapTheIsland,
+			Ragnarok: imgMapRagnarok,
+			Valguero: imgMapValguero,
+		};
+		imageOverlay(maps[this.map], bounds).addTo(this.leafletMap);
 
 		this._watchDinos();
 	}

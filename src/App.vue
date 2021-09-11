@@ -5,8 +5,8 @@
 				<v-card-title>
 					<v-tabs v-model="tab">
 						<v-tab key="table">Table</v-tab>
-						<v-tab key="mapTheIsland">The Island</v-tab>
 						<v-tab key="mapRagnarok">Ragnarok</v-tab>
+						<v-tab key="mapValguero">Valguero</v-tab>
 					</v-tabs>
 				</v-card-title>
 				<v-card-text>
@@ -14,11 +14,11 @@
 						<v-tab-item key="table">
 							<TamedTable :dinos="items" />
 						</v-tab-item>
-						<v-tab-item key="mapTheIsland">
-							<Map :dinos="items" map="TheIsland" />
-						</v-tab-item>
 						<v-tab-item key="mapRagnarok">
 							<Map :dinos="items" map="Ragnarok" />
+						</v-tab-item>
+						<v-tab-item key="mapValguero">
+							<Map :dinos="items" map="Valguero" />
 						</v-tab-item>
 					</v-tabs-items>
 				</v-card-text>
@@ -51,7 +51,7 @@
 					arr.push(
 						...cur
 							.filter((c) => c.type && c.wildLevels)
-							.map((d) => Object.assign(d, { map: "TheIsland" }))
+							.map((d) => Object.assign(d, { map: "Valguero" }))
 					);
 					return arr;
 				}, [] as any[]);
