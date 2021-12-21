@@ -18,11 +18,13 @@ import imgMapTheIsland from "../assets/The_Island_Topographic.jpg";
 import imgMapRagnarok from "../assets/Ragnarok_Map.png";
 // @ts-ignore
 import imgMapValguero from "../assets/Valguero.png";
+// @ts-ignore
+import imgMapLostIsland from "../assets/Lost_Island_Map.webp";
 
 @Component({})
 export default class Map extends Vue {
 	@Prop({ type: String, required: true, })
-	map!: "TheIsland"|"Ragnarok"|"Valguero";
+	map!: "TheIsland"|"Ragnarok"|"Valguero"|"LostIsland";
 	@Prop({ type: Array, required: true, })
 	dinos!: any[];
 
@@ -56,6 +58,7 @@ export default class Map extends Vue {
 			TheIsland: imgMapTheIsland,
 			Ragnarok: imgMapRagnarok,
 			Valguero: imgMapValguero,
+			LostIsland: imgMapLostIsland,
 		};
 		imageOverlay(maps[this.map], bounds).addTo(this.leafletMap);
 
